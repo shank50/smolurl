@@ -24,7 +24,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(userData: { firstName: string; email: string; password: string }): Promise<User>;
   upsertUser(user: UpsertUser): Promise<User>;
-  
+
   // URL operations
   createUrl(urlData: InsertUrl): Promise<Url>;
   getUrlByShortCode(shortCode: string): Promise<Url | undefined>;
@@ -32,17 +32,17 @@ export interface IStorage {
   getUserUrlCount(userId: string): Promise<number>;
   updateUrl(id: string, data: Partial<Url>): Promise<Url | undefined>;
   deleteUrl(id: string, userId: string): Promise<boolean>;
-  
+
   // Click tracking
   recordClick(clickData: InsertUrlClick): Promise<UrlClick>;
   getUrlAnalytics(urlId: string): Promise<ClickAnalytics>;
   getUrlClickCount(urlId: string): Promise<number>;
-  
+
   // Anonymous session operations
   getAnonymousSession(sessionId: string): Promise<AnonymousSession | undefined>;
   createAnonymousSession(sessionData: InsertAnonymousSession): Promise<AnonymousSession>;
   updateAnonymousSession(sessionId: string, data: Partial<AnonymousSession>): Promise<AnonymousSession | undefined>;
-  
+
   // Admin/dashboard aggregations
   getUserStats(userId: string): Promise<{
     totalUrls: number;
@@ -53,6 +53,11 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  // Database ping for warmup
+  async pingDatabase(): Promise<void> {
+    await db.execute(sql`SELECT 1`);
+  }
+
   // User operations
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
