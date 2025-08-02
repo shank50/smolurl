@@ -2,7 +2,7 @@ import { UrlShortenerForm } from "@/components/url-shortener-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Clock } from "lucide-react";
+import { Copy, Clock, Link2, Zap, BarChart3, Shield } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { copyToClipboard, formatRelativeTime } from "@/lib/url-utils";
 import { useToast } from "@/hooks/use-toast";
@@ -48,57 +48,104 @@ export default function Home() {
   };
 
   return (
-    <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <UrlShortenerForm />
+    <main className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative py-20 lg:py-28 overflow-hidden">
+        {/* Subtle pattern background */}
+        <div className="absolute inset-0 pattern-dots opacity-50" />
 
-      {/* Recent URLs (Anonymous) */}
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
+          {/* Hero Content */}
+          <div className="max-w-4xl mx-auto text-center mb-12 animate-fade-in-up">
+
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 text-foreground">
+              Shorten. Share.{" "}
+              <span className="text-primary">Track.</span>
+            </h1>
+
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Transform long URLs into short, memorable links.
+              Track clicks and analyze your audience with powerful analytics.
+            </p>
+          </div>
+
+          {/* URL Form Card */}
+          <div className="max-w-3xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+            <UrlShortenerForm />
+          </div>
+
+          {/* Feature Pills */}
+          <div className="flex flex-wrap justify-center gap-4 mt-10 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card soft-card text-sm font-medium text-muted-foreground">
+              <Zap className="h-4 w-4 text-primary" />
+              <span>Instant shortening</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card soft-card text-sm font-medium text-muted-foreground">
+              <BarChart3 className="h-4 w-4 text-primary" />
+              <span>Click analytics</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card soft-card text-sm font-medium text-muted-foreground">
+              <Shield className="h-4 w-4 text-primary" />
+              <span>Custom links</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Recent URLs Section */}
       {recentUrls.length > 0 && (
-        <div className="max-w-4xl mx-auto mt-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-                <span>Recent URLs</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {recentUrls.map((url: any, index: number) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-4 bg-muted/30 border border-border rounded-md hover:bg-muted/50 transition-colors"
-                  data-testid={`recent-url-${index}`}
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <code className="text-primary font-mono text-sm bg-primary/10 px-2 py-1 rounded">
-                        {url.shortUrl?.replace('https://', '')}
-                      </code>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleCopy(url.shortUrl)}
-                        data-testid={`button-copy-recent-${index}`}
-                      >
-                        <Copy className="h-3 w-3" />
-                      </Button>
-                    </div>
-                    <p className="text-sm text-muted-foreground truncate font-mono">
-                      {url.originalUrl}
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-4 ml-4">
-                    <div className="text-right">
-                      <Badge variant="secondary">Anonymous</Badge>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {formatRelativeTime(new Date(url.createdAt || Date.now()))}
+        <section className="py-12 bg-muted/30">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-xl bg-primary/10">
+                  <Clock className="h-5 w-5 text-primary" />
+                </div>
+                <h2 className="text-xl font-semibold">Recent URLs</h2>
+              </div>
+
+              <div className="space-y-3">
+                {recentUrls.map((url: any, index: number) => (
+                  <div
+                    key={index}
+                    className={`soft-card p-5 animate-fade-in-up stagger-${Math.min(index + 1, 5)}`}
+                    data-testid={`recent-url-${index}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-2">
+                          <code className="text-primary font-mono text-sm bg-primary/10 px-3 py-1.5 rounded-lg font-medium">
+                            {url.shortUrl?.replace('https://', '')}
+                          </code>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleCopy(url.shortUrl)}
+                            className="h-8 w-8 p-0 hover:bg-primary/10 hover:text-primary"
+                            data-testid={`button-copy-recent-${index}`}
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <p className="text-sm text-muted-foreground truncate font-mono">
+                          {url.originalUrl}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-4 ml-4">
+                        <div className="text-right">
+                          <Badge variant="secondary" className="font-medium">Anonymous</Badge>
+                          <div className="text-xs text-muted-foreground mt-1.5">
+                            {formatRelativeTime(new Date(url.createdAt || Date.now()))}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
       )}
     </main>
   );
