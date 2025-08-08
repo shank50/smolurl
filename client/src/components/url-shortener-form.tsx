@@ -5,8 +5,7 @@ import { urlShortenSchema, type UrlShortenRequest } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
-import { Import } from "lucide-react";
+import { Link2, ArrowRight, Sparkles } from "lucide-react";
 import { useShortenUrl, useAnonymousSession } from "@/hooks/use-url-shortener";
 import { LimitModal } from "@/components/modals/limit-modal";
 import { AuthModal } from "@/components/modals/auth-modal";
@@ -42,7 +41,7 @@ export function UrlShortenerForm() {
 
     try {
       const result = await shortenMutation.mutateAsync(formattedData);
-      
+
       // Save to recent URLs for anonymous users
       if (!isAuthenticated && result) {
         saveRecentUrl({
@@ -54,7 +53,7 @@ export function UrlShortenerForm() {
           createdAt: new Date().toISOString(),
         });
       }
-      
+
       form.reset();
     } catch (error: any) {
       if (error.message?.includes("ANONYMOUS_LIMIT_REACHED") || error.message?.includes("429")) {
@@ -81,110 +80,112 @@ export function UrlShortenerForm() {
 
   return (
     <>
-      <div className="max-w-4xl mx-auto">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-            Shorten URLs with Style
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Create short, memorable links with powerful analytics. No account needed to get started.
-          </p>
-        </div>
-
-        {/* URL Shortening Form */}
-        <Card className="mb-8">
-          <CardContent className="p-8">
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div>
-                <Label htmlFor="originalUrl" className="block text-sm font-medium mb-2">
-                  Original URL
-                </Label>
+      <div className="max-w-3xl mx-auto">
+        {/* URL Shortening Form - Soft Card */}
+        <div className="soft-card p-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* URL Input */}
+            <div>
+              <Label htmlFor="originalUrl" className="block text-sm font-semibold mb-2.5">
+                Paste your long URL
+              </Label>
+              <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  <Link2 className="h-5 w-5" />
+                </div>
                 <Input
                   id="originalUrl"
                   type="url"
-                  placeholder="https://example.com/very-long-url-that-needs-shortening"
+                  placeholder="https://example.com/your-very-long-url-here"
                   {...form.register("originalUrl")}
-                  className="h-12"
+                  className="h-14 pl-12 text-base rounded-xl border-border/60 bg-background focus:border-primary focus:ring-primary"
                   data-testid="input-original-url"
                 />
-                {form.formState.errors.originalUrl && (
-                  <p className="text-sm text-destructive mt-1">
-                    {form.formState.errors.originalUrl.message}
+              </div>
+              {form.formState.errors.originalUrl && (
+                <p className="text-sm text-destructive mt-2">
+                  {form.formState.errors.originalUrl.message}
+                </p>
+              )}
+            </div>
+
+            {/* Custom Slug + Submit */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2">
+                <Label htmlFor="customSlug" className="block text-sm font-semibold mb-2.5">
+                  Custom link <span className="text-muted-foreground font-normal">(optional)</span>
+                </Label>
+                <div className="flex">
+                  <span className="inline-flex items-center px-4 rounded-l-xl border border-r-0 border-border/60 bg-muted/50 text-muted-foreground text-sm font-mono">
+                    smolurl/
+                  </span>
+                  <Input
+                    id="customSlug"
+                    placeholder="my-custom-link"
+                    {...form.register("customSlug")}
+                    className="rounded-l-none rounded-r-xl font-mono h-12 border-border/60"
+                    data-testid="input-custom-slug"
+                  />
+                </div>
+                {form.formState.errors.customSlug && (
+                  <p className="text-sm text-destructive mt-2">
+                    {form.formState.errors.customSlug.message}
                   </p>
                 )}
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="customSlug" className="block text-sm font-medium mb-2">
-                    Custom Link (Optional)
-                  </Label>
-                  <div className="flex">
-                    <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-border bg-muted text-muted-foreground text-sm font-mono">
-                      smolURL/
-                    </span>
-                    <Input
-                      id="customSlug"
-                      placeholder="my-link"
-                      {...form.register("customSlug")}
-                      className="rounded-l-none font-mono"
-                      data-testid="input-custom-slug"
-                    />
-                  </div>
-                  {form.formState.errors.customSlug && (
-                    <p className="text-sm text-destructive mt-1">
-                      {form.formState.errors.customSlug.message}
-                    </p>
-                  )}
-                </div>
-                
-                <div className="flex flex-col justify-end">
-                  <Button 
-                    type="submit" 
-                    className="h-12 font-medium"
-                    disabled={shortenMutation.isPending}
-                    data-testid="button-shorten"
-                  >
-                    <Import className="mr-2 h-4 w-4" />
-                    {shortenMutation.isPending ? "Shortening..." : "Shorten URL"}
-                  </Button>
-                </div>
-              </div>
-            </form>
 
-            {/* Usage Counter for Anonymous Users */}
-            {!isAuthenticated && (
-              <div className="mt-6 p-4 bg-muted/50 rounded-md border border-border" data-testid="usage-counter">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-muted-foreground">URLs created today:</span>
-                  </div>
-                  <span className="text-sm font-medium" data-testid="text-url-count">
-                    {urlCount}/10
-                  </span>
-                </div>
-                <Progress value={progressPercentage} className="mb-2" />
-                <p className="text-xs text-muted-foreground">
-                  <button 
-                    onClick={() => {
-                      setAuthMode('signup');
-                      setShowAuthModal(true);
-                    }}
-                    className="text-primary hover:underline"
-                    data-testid="link-signup"
-                  >
-                    Create an account
-                  </button>{" "}
-                  for unlimited URLs and analytics.
-                </p>
-                
-                {/* Recent URLs Display */}
-                <RecentUrlsDisplay recentUrls={recentUrls} />
+              <div className="flex flex-col justify-end">
+                <Button
+                  type="submit"
+                  className="h-12 rounded-xl font-semibold text-base shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all"
+                  disabled={shortenMutation.isPending}
+                  data-testid="button-shorten"
+                >
+                  {shortenMutation.isPending ? (
+                    "Shortening..."
+                  ) : (
+                    <>
+                      Shorten
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
+          </form>
+
+          {/* Usage Counter for Anonymous Users */}
+          {!isAuthenticated && (
+            <div className="mt-8 pt-6 border-t border-border/50">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">Free tier usage</span>
+                </div>
+                <span className="text-sm font-semibold text-primary" data-testid="text-url-count">
+                  {urlCount}/10 URLs
+                </span>
+              </div>
+              <Progress value={progressPercentage} className="h-2 mb-3" />
+              <p className="text-sm text-muted-foreground">
+                <button
+                  onClick={() => {
+                    setAuthMode('signup');
+                    setShowAuthModal(true);
+                  }}
+                  className="text-primary font-medium hover:underline"
+                  data-testid="link-signup"
+                >
+                  Sign up free
+                </button>{" "}
+                for unlimited URLs and detailed analytics.
+              </p>
+
+              {/* Recent URLs Display */}
+              <RecentUrlsDisplay recentUrls={recentUrls} />
+            </div>
+          )}
+        </div>
       </div>
 
       <LimitModal
