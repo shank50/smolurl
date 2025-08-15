@@ -1,10 +1,11 @@
 import { Switch, Route } from "wouter";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
 import { useState } from "react";
+import { Loader2, Zap } from "lucide-react";
 
 import { Header } from "@/components/layout/header";
 import Home from "@/pages/home";
@@ -17,11 +18,44 @@ import type { UrlWithAnalytics } from "@shared/schema";
 
 type View = 'home' | 'dashboard' | 'analytics';
 
+// Warmup screen component
+function WarmupScreen() {
+  return (
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+      <div className="text-center animate-fade-in-up">
+        <div className="relative mb-6">
+          <div className="p-4 rounded-2xl bg-primary/10 inline-block">
+            <Zap className="h-10 w-10 text-primary animate-pulse" />
+          </div>
+        </div>
+        <div className="flex items-center gap-3 text-xl font-semibold text-foreground mb-2">
+          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          Firing Up!
+        </div>
+        <p className="text-sm text-muted-foreground">Warming up the database...</p>
+      </div>
+    </div>
+  );
+}
+
 function AppRouter() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [currentView, setCurrentView] = useState<View>('home');
   const [selectedUrl, setSelectedUrl] = useState<UrlWithAnalytics | null>(null);
   const [showUrlForm, setShowUrlForm] = useState(false);
+
+  // Warm up the database on app load
+  const { isLoading: dbLoading, isError } = useQuery({
+    queryKey: ['health'],
+    queryFn: async () => {
+      const res = await fetch('/api/health');
+      if (!res.ok) throw new Error('Database warming up');
+      return res.json();
+    },
+    retry: 5,
+    retryDelay: 1000,
+    staleTime: Infinity,
+  });
 
   const handleViewAnalytics = (url: UrlWithAnalytics) => {
     setSelectedUrl(url);
@@ -42,8 +76,13 @@ function AppRouter() {
     setShowUrlForm(false);
   };
 
+  // Show warmup screen while database is loading
+  if (dbLoading && !isError) {
+    return <WarmupScreen />;
+  }
+
   // Show loading state while checking auth
-  if (isLoading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -66,18 +105,18 @@ function AppRouter() {
       {/* Main app route */}
       <Route path="/">
         <div className="min-h-screen bg-background">
-          <Header 
+          <Header
             onNavigate={handleNavigate}
             currentView={activeView}
           />
-          
+
           {activeView === 'analytics' && selectedUrl ? (
-            <Analytics 
+            <Analytics
               url={selectedUrl}
               onBack={handleBackToDashboard}
             />
           ) : activeView === 'dashboard' && isAuthenticated ? (
-            <Dashboard 
+            <Dashboard
               onViewAnalytics={handleViewAnalytics}
               showUrlForm={showUrlForm}
               onToggleUrlForm={() => setShowUrlForm(!showUrlForm)}
@@ -87,7 +126,7 @@ function AppRouter() {
           )}
         </div>
       </Route>
-      
+
       {/* 404 fallback */}
       <Route>
         <NotFound />

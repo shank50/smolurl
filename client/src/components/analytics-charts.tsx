@@ -1,13 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   PieChart,
   Pie,
@@ -48,7 +48,7 @@ export function AnalyticsCharts({ analytics }: AnalyticsChartsProps) {
             <p className="text-xs text-muted-foreground">Last 30 days</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Unique Visitors</CardTitle>
@@ -62,7 +62,7 @@ export function AnalyticsCharts({ analytics }: AnalyticsChartsProps) {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Top Country</CardTitle>
@@ -88,57 +88,63 @@ export function AnalyticsCharts({ analytics }: AnalyticsChartsProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Click Timeline */}
         <Card>
-        <CardHeader>
-          <CardTitle>Click Timeline</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {clicksByDay.length > 0 ? (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={clicksByDay} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis 
-                    dataKey="date" 
-                    className="text-xs"
-                    stroke="hsl(var(--muted-foreground))"
-                    tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  />
-                  <YAxis className="text-xs" stroke="hsl(var(--muted-foreground))" />
-                  <Tooltip 
-                    labelFormatter={(value) => new Date(value).toLocaleDateString()}
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                      color: 'hsl(var(--card-foreground))',
-                    }}
-                    itemStyle={{
-                      color: 'hsl(var(--primary))',
-                    }}
-                    cursor={{ 
-                      fill: 'hsl(var(--primary) / 0.1)',
-                      stroke: 'hsl(var(--primary))',
-                      strokeWidth: 1
-                    }}
-                  />
-                  <Bar 
-                    dataKey="clicks" 
-                    fill="#8B5CF6" // This is the corrected line. Using a specific hex color for consistency.
-                    radius={[2, 2, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          ) : (
-            <div className="h-64 flex items-center justify-center text-muted-foreground">
-              <div className="text-center">
-                <BarChart className="h-8 w-8 mx-auto mb-2" />
-                <p>No click data available</p>
+          <CardHeader>
+            <CardTitle>Click Timeline</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {clicksByDay.length > 0 ? (
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={clicksByDay} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fill: '#9CA3AF', fontSize: 12 }}
+                      tickLine={{ stroke: '#9CA3AF' }}
+                      axisLine={{ stroke: '#374151' }}
+                      tickFormatter={(value: string) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    />
+                    <YAxis
+                      tick={{ fill: '#9CA3AF', fontSize: 12 }}
+                      tickLine={{ stroke: '#9CA3AF' }}
+                      axisLine={{ stroke: '#374151' }}
+                    />
+                    <Tooltip
+                      content={({ active, payload, label }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="bg-card border border-border rounded-lg px-3 py-2 shadow-lg">
+                              <p className="text-sm font-medium text-foreground">
+                                {new Date(label).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              </p>
+                              <p className="text-sm text-primary font-semibold">
+                                {payload[0].value} clicks
+                              </p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                      cursor={{ fill: 'rgba(232, 93, 63, 0.1)' }}
+                    />
+                    <Bar
+                      dataKey="clicks"
+                      fill="#E85D3F"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            ) : (
+              <div className="h-64 flex items-center justify-center text-muted-foreground">
+                <div className="text-center">
+                  <BarChart className="h-8 w-8 mx-auto mb-2" />
+                  <p>No click data available</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Geographic Distribution */}
         <Card>
