@@ -48,7 +48,7 @@ A modern, full-stack URL shortener application built with React, TypeScript, Exp
 
 ### 1. Clone the Repository
 ```bash
-git clone <https://github.com/shank50/smolurl>
+git clone https://github.com/shank50/smolurl
 cd SmolURL
 ```
 
@@ -74,7 +74,7 @@ SESSION_SECRET="your-secure-random-string"
 # Domain Configuration
 SHORT_DOMAIN="domain-where-your-app-is-live.com"
 Example: url-shortener.render.com
-You can keep ignore it for local development.
+You can ignore it for local development.
 
 ```
 
