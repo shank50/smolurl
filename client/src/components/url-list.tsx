@@ -124,12 +124,12 @@ export function UrlList({ onViewAnalytics, onCreateNew }: UrlListProps) {
                     <TableCell>
                       <div className="flex items-center space-x-2">
                         <code className="text-primary font-mono text-sm bg-primary/10 px-2 py-1 rounded">
-                          {url.shortUrl?.replace('https://', '') || `smolurl.shank50.dev/${url.shortCode}`}
+                          {url.shortUrl?.replace('https://', '')}
                         </code>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleCopy(url.shortUrl || `https://smolurl.shank50.dev/${url.shortCode}`)}
+                          onClick={() => handleCopy(url.shortUrl)}
                           data-testid={`button-copy-${url.id}`}
                         >
                           <Copy className="h-3 w-3" />

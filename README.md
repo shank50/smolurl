@@ -73,9 +73,9 @@ SESSION_SECRET="your-secure-random-string"
 
 # Domain Configuration
 SHORT_DOMAIN="domain-where-your-app-is-live.com"
-Example: url-shortener.render.com
-You can ignore it for local development.
-
+# Example: url-shortener.render.com or myapp.com
+# You can leave this as "localhost:5000" for local development.
+# The backend uses this to generate complete short URLs.
 ```
 
 #### Environment Variables Explained:
@@ -83,8 +83,11 @@ You can ignore it for local development.
 - **PORT**: Port number for the Express server
 - **NODE_ENV**: Environment mode (development/production)
 - **SESSION_SECRET**: Random string for securing user sessions
-- **SHORT_DOMAIN**: Your domain for generating short URLs (server-side)
-- **VITE_SHORT_DOMAIN**: Your domain for the frontend (client-side)
+- **SHORT_DOMAIN**: Your domain for generating short URLs (e.g., "myapp.com" or "localhost:5000")
+  - The backend automatically builds complete short URLs like `https://yourdomain.com/abc123`
+  - For local development, use "localhost:5000"
+  - For production, use your actual domain (e.g., "smolurl.app")
+
 
 ### 4. Database Setup
 Push the database schema to your PostgreSQL database:

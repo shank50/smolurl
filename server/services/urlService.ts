@@ -26,7 +26,7 @@ export class UrlService {
       // Check if custom slug is already taken
       const existing = await storage.getUrlByShortCode(shortCode);
       if (existing) {
-        throw new Error('This custom slug is already taken. Please choose a different one.');
+        throw new Error('This custom URL is already taken. Please choose a different one.');
       }
     }
 

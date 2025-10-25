@@ -71,12 +71,12 @@ export default function Home() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-2">
                       <code className="text-primary font-mono text-sm bg-primary/10 px-2 py-1 rounded">
-                        {url.shortUrl?.replace('https://', '') || `${process.env.SHORT_DOMAIN || 'localhost:5000'}/${url.shortCode}`}
+                        {url.shortUrl?.replace('https://', '')}
                       </code>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleCopy(url.shortUrl || `https://${process.env.SHORT_DOMAIN || 'localhost:5000'}/${url.shortCode}`)}
+                        onClick={() => handleCopy(url.shortUrl)}
                         data-testid={`button-copy-recent-${index}`}
                       >
                         <Copy className="h-3 w-3" />
